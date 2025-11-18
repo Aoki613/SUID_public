@@ -1,4 +1,4 @@
-// script.js
+//SUID_service_beacon.js
 
 // 地図を初期化（仮の位置：日本中心付近）
 const map = L.map('map').setView([35.6895, 139.6917], 13);
@@ -76,24 +76,6 @@ document.getElementById('locateBtn').addEventListener('click', () => {
   map.locate({ setView: true, maxZoom: 16 });
 });
 
-/*
-
-// 「地図中央にマーカーを追加」ボタン
-document.getElementById('addMarkerBtn').addEventListener('click', () => {
-  const center = map.getCenter();
-  const m = L.marker(center).bindPopup('ここに追加されました').openPopup();
-  markers.addLayer(m);
-});
-
-
-
-// クリックでマーカー追加
-map.on('click', function (e) {
-  const m = L.marker(e.latlng).bindPopup(`クリック位置: ${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}`);
-  markers.addLayer(m);
-});
-
-*/
 
 // Geocoder 機能（検索）
 if (L.Control.Geocoder) {
@@ -111,7 +93,8 @@ if (L.Control.Geocoder) {
 }
 
 
-
+/*
+//デバッグ用
 // 緯度経度を表示するコントロール
 const coordDiv = L.control({ position: 'bottomleft' });
 coordDiv.onAdd = function () {
@@ -126,3 +109,5 @@ coordDiv.update = function (latlng) {
 };
 coordDiv.addTo(map);
 map.on('mousemove', e => coordDiv.update(e.latlng));
+
+*/
