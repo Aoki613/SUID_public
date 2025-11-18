@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>シンプルマップ表示サンプル</title>
+  <title>ビーコン受信サンプル</title>
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
@@ -17,7 +17,7 @@
   <div id="map"></div>
   <div class="controls">
     <button id="locateBtn">現在地を中心に</button>
-    <button onclick="location.href='Beacon/Beacon.html'">ビーコン受信後</button>
+    <button onclick="location.href='../index.html'">ビーコン受信前</button>
   </div>
 
   <!-- JSライブラリ -->
@@ -26,6 +26,6 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
   <!-- 外部JavaScript -->
-  <script src="SUID_service.js"></script>
+  <script src="SUID_service_beacon.js"></script>
 </body>
 </html>
