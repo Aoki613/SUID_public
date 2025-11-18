@@ -3,6 +3,8 @@
 // 地図を初期化（仮の位置：日本中心付近）
 const map = L.map('map').setView([35.6895, 139.6917], 13);
 
+
+
 // タイルレイヤー (OpenStreetMap)
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
@@ -13,33 +15,49 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markers = L.markerClusterGroup();
 map.addLayer(markers);
 
-// 現在地表示用のマーカー（最初は未定義）
+// --- 現在地リアルタイム追跡（追従なし） ---
+map.locate({ watch: true });
+
+// 初回だけ現在地へ自動ズームするためのフラグ
+let firstUpdate = true;
+
+// 現在地の青い円
 let currentMarker = null;
+let accuracyCircle = null;
 
-// 現在地をリアルタイム追跡
-map.locate({ setView: true, watch: true, maxZoom: 16 });
-
-// 現在地更新イベント
 map.on('locationfound', function (e) {
   const latlng = e.latlng;
   const radius = e.accuracy;
 
-  // すでにマーカーがある場合は位置を更新
+  // 🔵 初回だけ現在地に地図を移動
+  if (firstUpdate) {
+    map.setView(latlng, 18);
+    firstUpdate = false;
+  }
+
+  // すでに現在地円がある場合 → 更新
   if (currentMarker) {
     currentMarker.setLatLng(latlng);
+    accuracyCircle.setLatLng(latlng).setRadius(radius);
   } else {
-    // 初回のみ作成
-    currentMarker = L.marker(latlng)
-      .addTo(map)
-      .bindPopup("あなたの現在地")
-      .openPopup();
+    // 初回のみ作成（青い半透明の丸）
+    currentMarker = L.circleMarker(latlng, {
+      radius: 10,
+      color: '#1E90FF',
+      weight: 2,
+      fillColor: '#1E90FF',
+      fillOpacity: 0.4
+    })
+    .addTo(map)
+    .bindPopup("あなたの現在地");
+
   }
 });
 
-// 現在地取得エラー時
 map.on('locationerror', function () {
-  alert('位置情報が取得できませんでした。ブラウザの設定を確認してください。');
+  alert('現在地が取得できませんでした。ブラウザの位置情報設定を確認してください。');
 });
+
 
 /*後で消す
 // サンプルマーカー
@@ -70,7 +88,7 @@ document.getElementById('addMarkerBtn').addEventListener('click', () => {
   markers.addLayer(m);
 });
 
-*/
+
 
 // クリックでマーカー追加
 map.on('click', function (e) {
@@ -78,20 +96,24 @@ map.on('click', function (e) {
   markers.addLayer(m);
 });
 
+*/
+
 // Geocoder 機能（検索）
 if (L.Control.Geocoder) {
-  const geocoder = L.Control.geocoder({ defaultMarkGeocode: false })
-    .on('markgeocode', function (e) {
-      const bbox = e.geocode.bbox;
-      const poly = L.polygon([
-        bbox.getSouthEast(), bbox.getNorthEast(), bbox.getNorthWest(), bbox.getSouthWest()
-      ]).addTo(map);
-      map.fitBounds(poly.getBounds());
-      const m = L.marker(e.geocode.center).bindPopup(e.geocode.name).addTo(map);
-      markers.addLayer(m);
-    })
-    .addTo(map);
+    const geocoder = L.Control.geocoder({
+    defaultMarkGeocode: false
+  }).on('markgeocode', function (e) {
+    map.fitBounds(e.geocode.bbox);
+  }).addTo(map);
+
+  // 検索窓の input に autocomplete="off" を設定
+  const input = document.querySelector('.leaflet-control-geocoder-form input');
+  if (input) {
+    input.setAttribute('autocomplete', 'off');
+  }
 }
+
+/*
 
 // 緯度経度を表示するコントロール
 const coordDiv = L.control({ position: 'bottomleft' });
@@ -107,3 +129,5 @@ coordDiv.update = function (latlng) {
 };
 coordDiv.addTo(map);
 map.on('mousemove', e => coordDiv.update(e.latlng));
+
+*/
